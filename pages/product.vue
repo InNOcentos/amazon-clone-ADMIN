@@ -10,15 +10,27 @@
             <form action="">
               <div class="a-spacing-top-medium">
                 <label for="">Category</label>
-                <select name="" class="a-select-option" id="">
-                  <option v-for="category in categories" :value="category._id" :key="category._id">{{category.type}}</option>
+                <select class="a-select-option" v-model="categoryID">
+                  <option
+                    v-for="category in categories"
+                    :value="category._id"
+                    :key="category._id"
+                  >
+                    {{ category.type }}
+                  </option>
                 </select>
               </div>
 
               <div class="a-spacing-top-medium">
                 <label for="">Owner</label>
-                <select name="" class="a-select-option" id="">
-                  <option v-for="owner in owners" :value="owner._id" :key="owner._id">{{owner.name}}</option>
+                <select class="a-select-option" v-model="ownerID">
+                  <option
+                    v-for="owner in owners"
+                    :value="owner._id"
+                    :key="owner._id"
+                  >
+                    {{ owner.name }}
+                  </option>
                 </select>
               </div>
 
@@ -27,8 +39,7 @@
                 <input
                   type="text"
                   class="a-input-text"
-                  name=""
-                  id=""
+                    v-model="title"
                   style="width: 100%"
                 />
               </div>
@@ -38,8 +49,17 @@
                 <input
                   type="number"
                   class="a-input-text"
-                  name=""
-                  id=""
+                  v-model="price"
+                  style="width: 100%"
+                />
+              </div>
+
+              <div class="a-spacing-top-medium">
+                <label for="">Stock Quantity</label>
+                <input
+                  type="number"
+                  class="a-input-text"
+                  v-model="stockQuantity"
                   style="width: 100%"
                 />
               </div>
@@ -47,22 +67,20 @@
               <div class="a-spacing-top-medium">
                 <label for="">Description</label>
                 <textarea
-                  name=""
-                  id=""
-                  cols="30"
-                  rows="10"
+                  v-model="description"
+                  rows="5"
                   placeholder="Provide details such as a product description"
-                  style="width: 100%"
+                  style="width: 100%;resize:none"
                 ></textarea>
               </div>
 
               <div class="a-spacing-top-medium">
                 <label for="">Add Photo</label>
                 <div class="a-row a-spacing-top-medium">
-                  <label for="" class="choosefile-button">
+                  <label class="choosefile-button">
                     <i class="fal fa-plus"></i>
-                    <input type="file" />
-                    <p style="margin-top: -70px">name</p>
+                    <input type="file" @change="onFileSelected"/>
+                    <p style="margin-top: -70px">{{ fileName }}</p>
                   </label>
                 </div>
               </div>
@@ -70,7 +88,7 @@
               <div class="a-spacing-top-large">
                 <span class="a-button-register">
                   <span class="a-button-inner">
-                    <span class="a-button-text">Add Product</span>
+                    <span class="a-button-text" @click="onAddProduct">Add Product</span>
                   </span>
                 </span>
               </div>
@@ -102,9 +120,42 @@ export default {
         owners: ownerResponse.owners,
       };
     } catch (err) {
-        console.log(err);
+      console.log(err);
     }
   },
+  data() {
+    return {
+      categoryID: null,
+      ownerID: null,
+      title: "",
+      price: 0,
+      description: "",
+      selectedFile: null,
+      fileName: "",
+      stockQuantity: 1
+    };
+  },
+  methods:  {
+    onFileSelected(e) {
+        this.selectedFile = e.target.files[0];
+        this.fileName = e.target.files[0].name;
+        console.log(this.selectedFile)
+    },
+    async onAddProduct() {
+        let data = new FormData();
+        data.append('title',this.title);
+        data.append('price',this.price);
+        data.append('description',this.description);
+        data.append('stockQuantity',this.stockQuantity);
+        data.append('ownerID',this.ownerID);
+        data.append('categoryID',this.categoryID);
+        data.append('photo',this.selectedFile, this.selectedFile.name);
+
+        let result = await this.$axios.$post('http://localhost:3000/api/products', data);
+
+        this.$router.push('/')
+    }
+  }
 };
 </script>
 
