@@ -8,14 +8,9 @@
             All products
           </h1>
           <div class="a-spacing-large"></div>
-
-          <a href="#" class="a-button-buy-again">Add a new product</a>
-          <a href="#" class="a-button-history margin-right-10"
-            >Add a new category</a
-          >
-          <a href="#" class="a-button-history margin-right-10"
-            >Add a new owner</a
-          >
+          <nuxt-link to="/products" class="a-button-buy-again">Add a new product</nuxt-link>
+          <nuxt-link to="/category" class="a-button-history margin-right-10">Add a new category</nuxt-link>
+          <nuxt-link to="/owner" class="a-button-history margin-right-10">Add a new owner</nuxt-link>
         </div>
       </div>
     </div>
@@ -53,8 +48,8 @@
               
             </div>
             <div class="a-row">
-              <a href="#" class="a-button-history margin-right-10">Update</a>
-              <a href="#" class="a-button-history margin-right-10">Delete</a>
+              <nuxt-link :to="`/products/${product._id}`" class="a-button-history margin-right-10">Update</nuxt-link>
+              <a href="#" class="a-button-history margin-right-10" @click="oneDeleteProduct(product._id, index)">Delete</a>
               
             </div>
           </div>
@@ -75,6 +70,18 @@ export default {
         products: respone.products
       }
     } catch(err) {
+    }
+  },
+  methods: {
+    async oneDeleteProduct(id, index) {
+      try{
+        console.log('delete')
+        let response = await this.$axios.$delete(`http://localhost:8080/api/products/${id}`)
+        console.log(response.status)
+        if (response.status) this.products.splice(index,1);
+      }catch(err) {
+        console.log(err)
+      }
     }
   }
 };
