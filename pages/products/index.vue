@@ -105,8 +105,8 @@
 export default {
   async asyncData({ $axios }) {
     try {
-      let categories = $axios.$get("http://localhost:8080/api/categories");
-      let owners = $axios.$get("http://localhost:8080/api/owners");
+      let categories = await $axios.$get("http://localhost:8080/api/categories");
+      let owners = await $axios.$get("http://localhost:8080/api/owners");
 
       const [catResponse, ownerResponse] = await Promise.all([
         categories,
